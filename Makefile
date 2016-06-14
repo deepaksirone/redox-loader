@@ -5,6 +5,7 @@ default: run
 
 clean:
 	rm -rf build
+	rm -rf target
 
 run: build/os.iso
 	qemu-system-x86_64 -cdrom build/os.iso
@@ -27,7 +28,7 @@ build/boot.o: kernel/boot.asm
 	nasm -f elf64 kernel/boot.asm  -o build/boot.o
 
 build/kernel.bin: build/multiboot_header.o build/long_mode_init.o build/boot.o kernel/linker.ld cargo
-	ld -n  --gc-sections -o build/kernel.bin -T kernel/linker.ld build/multiboot_header.o build/boot.o build/long_mode_init.o build/libblog_os.a
+	ld -n  --gc-sections -o build/kernel.bin -T kernel/linker.ld build/multiboot_header.o build/boot.o build/long_mode_init.o build/libpamb_os.a
 cargo:
 	cargo build --target x86_64-unknown-linux-gnu
-	cp target/x86_64-unknown-linux-gnu/debug/libblog_os.a build/libblog_os.a	
+	cp target/x86_64-unknown-linux-gnu/debug/libpamb_os.a build/libpamb_os.a	

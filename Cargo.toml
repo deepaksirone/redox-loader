@@ -1,7 +1,7 @@
 [package]
-name = "blog_os"
+name = "pamb_os"
 version = "0.1.0"
-authors = ["Deepak Sirone <deepaksirone94@gmail.com>"]
+authors = ["Deepak Sirone", "Arpan Kapoor"]
 
 [lib]
 crate-type = ["staticlib"]
