@@ -30,5 +30,5 @@ build/boot.o: kernel/boot.asm
 build/kernel.bin: build/multiboot_header.o build/long_mode_init.o build/boot.o kernel/linker.ld cargo
 	ld -n  --gc-sections -o build/kernel.bin -T kernel/linker.ld build/multiboot_header.o build/boot.o build/long_mode_init.o build/libpamb_os.a
 cargo:
-	cargo build --target x86_64-unknown-linux-gnu
-	cp target/x86_64-unknown-linux-gnu/debug/libpamb_os.a build/libpamb_os.a	
+	cargo build --target x86_64-unknown-none-gnu
+	cp target/x86_64-unknown-none-gnu/debug/libpamb_os.a build/libpamb_os.a	
