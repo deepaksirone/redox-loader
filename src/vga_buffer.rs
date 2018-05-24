@@ -48,7 +48,7 @@ use core::ptr::Unique;
 pub struct Writer {
     column_position: usize,
     color_code: ColorCode,
-    buffer: Unique<Buffer>,
+    buffer: *mut Buffer,
 }
 
 impl Writer {
@@ -73,7 +73,8 @@ impl Writer {
     }
 
     fn buffer(&mut self) -> &mut Buffer {
-        unsafe { self.buffer.get_mut() }
+        use core::intrinsics::transmute;
+        unsafe { transmute::<*mut Buffer, &mut Buffer>(self.buffer) }
     }
 
     fn new_line(&mut self) { 
@@ -107,7 +108,7 @@ pub fn print_something() {
     let mut writer = Writer {
         column_position: 0,
         color_code: ColorCode::new(Color::LightGreen, Color::Black),
-        buffer: unsafe { Unique::new(0xb8000 as *mut _) }
+        buffer: unsafe { 0xb8000 as *mut _ }
     }; 
 
     writer.write_byte(b'H');
@@ -127,7 +128,7 @@ use spin::Mutex;
 pub static WRITER: Mutex<Writer> = Mutex::new(Writer {
     column_position: 0,
     color_code: ColorCode::new(Color::LightGreen, Color::Black),
-    buffer: unsafe { Unique::new(0xb8000 as *mut _) }
+    buffer: unsafe { 0xb8000 as *mut _}
 });
 
 macro_rules! println {
