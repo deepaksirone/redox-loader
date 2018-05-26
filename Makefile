@@ -27,8 +27,9 @@ build/boot.o: kernel/boot.asm
 	mkdir -p build
 	nasm -f elf64 kernel/boot.asm  -o build/boot.o
 
-build/kernel.bin: build/multiboot_header.o build/long_mode_init.o build/boot.o kernel/linker.ld cargo
-	ld -n  --gc-sections -o build/kernel.bin -T kernel/linker.ld build/multiboot_header.o build/boot.o build/long_mode_init.o build/libpamb_os.a
+build/kernel.bin: kernel/linker.ld cargo
+	ld --gc-sections -z max-page-size=0x1000 -o build/kernel.bin -T kernel/linker.ld build/libpamb_os.a
+	objcopy --strip-debug $@
 cargo:
 	mkdir -p build
 	RUST_TARGET_PATH=$(shell pwd) xargo build --target x86_64-pamb_os
