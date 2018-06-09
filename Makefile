@@ -8,6 +8,8 @@ default: run
 clean:
 	rm -rf build
 	rm -rf target
+	rm Cargo.lock
+	xargo clean
 
 run_iso: build/os.iso
 	qemu-system-x86_64 -cdrom build/os.iso
@@ -16,6 +18,7 @@ run: build/harddrive.bin build/extra.qcow2
 	SDL_VIDEO_X11_DGAMOUSE=0 qemu-system-x86_64 -serial mon:stdio -d cpu_reset -d guest_errors -smp 4 -m 2048 -machine q35 -device ich9-intel-hda -device hda-duplex -net nic,model=e1000 -net user -net dump,file=build/network.pcap -device nec-usb-xhci,id=xhci -device usb-tablet,bus=xhci.0 -s \
     -drive file=build/harddrive.bin,format=raw \
     -drive file=build/extra.qcow2
+
 
 build/extra.qcow2:
 	qemu-img create -f qcow2 $@ 1G
@@ -46,5 +49,6 @@ build/harddrive.bin: build/kernel.bin
 
 cargo:
 	mkdir -p build
-	RUST_TARGET_PATH=$(shell pwd) xargo build --target x86_64-pamb_os
+	
+	TARGET=. RUST_TARGET_PATH=$(shell pwd) xargo build --target x86_64-pamb_os
 	cp target/x86_64-pamb_os/debug/libpamb_os.a build/libpamb_os.a	
