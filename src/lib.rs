@@ -36,7 +36,7 @@ pub mod macros;
 //pub mod arch;
 //pub use arch::*;
 
-//pub mod devices;
+//pub mod devices
 pub mod allocator;
 pub mod memory;
 pub mod time;
