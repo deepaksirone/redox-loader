@@ -2,9 +2,9 @@ use core::fmt;
 use spin::MutexGuard;
 
 use devices::uart_16550::SerialPort;
-use io::Pio;
+use syscall::io::Pio;
 
-use serial::COM1;
+use super::device::serial::COM1;
 #[cfg(feature = "graphical_debug")]
 use super::graphical_debug::{DEBUG_DISPLAY, DebugDisplay};
 
@@ -25,8 +25,6 @@ impl<'a> Writer<'a> {
 }
 
 impl<'a> fmt::Write for Writer<'a> {
-
-
     #[cfg(not(feature = "graphical_debug"))]
     fn write_str(&mut self, s: &str) -> Result<(), fmt::Error> {
         self.serial.write_str(s)
@@ -37,6 +35,7 @@ impl<'a> fmt::Write for Writer<'a> {
         if let Some(ref mut display) = *self.display {
             let _ = display.write_str(s);
         }
+
         self.serial.write_str(s)
     }
 }

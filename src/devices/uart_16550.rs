@@ -1,7 +1,7 @@
 use core::fmt::{self, Write};
 
 //use scheme::debug::debug_input;
-use io::{Io, Pio, Mmio, ReadOnly};
+use syscall::io::{Io, Pio, Mmio, ReadOnly};
 
 bitflags! {
     /// Interrupt enable flags

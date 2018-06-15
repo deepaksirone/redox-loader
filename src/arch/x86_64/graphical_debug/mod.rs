@@ -15,7 +15,7 @@ pub mod display;
 pub mod mode_info;
 pub mod primitive;
 
-pub static FONT: &'static [u8] = include_bytes!("../../unifont.font");
+pub static FONT: &'static [u8] = include_bytes!("../../../../res/unifont.font");
 
 pub static DEBUG_DISPLAY: Mutex<Option<DebugDisplay>> = Mutex::new(None);
 

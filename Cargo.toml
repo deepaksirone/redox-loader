@@ -1,7 +1,7 @@
 [package]
 name = "pamb_os"
 version = "0.1.0"
-authors = ["Deepak Sirone", "Arpan Kapoor"]
+authors = ["Deepak Sirone"]
 
 [lib]
 crate-type = ["staticlib"]
@@ -10,7 +10,7 @@ crate-type = ["staticlib"]
 rlibc = "1.0.0"
 spin = "0.4"
 bitflags = "1"
-linked_list_allocator = "0.6"
+linked_list_allocator = "0.6.1"
 slab_allocator = { path = "slab_allocator" , optional = true}
 raw-cpuid = "3.0"
 redox_syscall = { path = "syscall"}
@@ -21,6 +21,11 @@ panic = "abort"
 [dependencies.x86]
 version = "0.7"
 default-features = false
+
+[dependencies.goblin]
+version = "0.0.10"
+default-features = false
+features = ["elf32", "elf64"]
 
 [features]
 default = []
