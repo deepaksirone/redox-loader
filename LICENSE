@@ -20,6 +20,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+This project is based on the Redox kernel.
+Link: https://gitlab.redox-os.org/redox-os/kernel
+The license for the Redox kernel is as follows:
+
 MIT License
 
 Copyright (c) 2017 Jeremy Soller

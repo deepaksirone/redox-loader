@@ -18,6 +18,7 @@ use idt;
 use interrupt;
 use memory;
 use paging;
+use paging::ActivePageTable;
 
 /// Test of zero values in BSS.
 static BSS_TEST_ZERO: usize = 0;
@@ -48,7 +49,7 @@ pub struct KernelArgs {
 
 /// The entry to Rust, all things must be initialized
 #[no_mangle]
-pub unsafe extern fn kstart(args_ptr: *const KernelArgs)  {
+pub unsafe extern fn kstart(args_ptr: *const KernelArgs) -> ActivePageTable {
     let env = {
         let args = &*args_ptr;
 
@@ -131,9 +132,11 @@ pub unsafe extern fn kstart(args_ptr: *const KernelArgs)  {
 
         BSP_READY.store(true, Ordering::SeqCst);
 
-        slice::from_raw_parts(env_base as *const u8, env_size)
+        slice::from_raw_parts(env_base as *const u8, env_size);
+        active_table
     };
-
+        env
+    
 //    ::kmain(CPU_COUNT.load(Ordering::SeqCst), env);
 }
 
