@@ -11,7 +11,9 @@
 #![feature(allocator_api, heap_api)]
 #![feature(global_allocator)]
 #![feature(core_intrinsics)]
-#![feature(type_ascription)]
+//#![feature(type_ascription)]
+#![feature(repr_align)]
+#![feature(attr_literals)]
 
 extern crate rlibc;
 extern crate spin;
@@ -56,6 +58,7 @@ pub mod graphical_debug;
 //pub mod serial;
 //pub mod device;
 pub mod devices;
+pub mod real_mode;
 //pub mod io;
 //pub mod gdt;
 //pub mod arch;
@@ -77,6 +80,9 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
 {
         let mut active_table  = arch::x86_64::start::kstart(args_ptr);
         let mut mbr = partition::read_bootsector(&mut active_table);
+        partition::drop_to_real(&mut active_table);
+//        assert_eq!(core::mem::align_of::<real_mode::DescriptorTablePointer>(), 17);
+
         println!("Hello World!");
         println!("Loader Stub Initialized");
     

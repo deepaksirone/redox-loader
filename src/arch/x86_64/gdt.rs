@@ -147,6 +147,8 @@ pub unsafe fn init_paging(tcb_offset: usize, stack_offset: usize) {
     // Set the stack pointer when coming back from userspace
     set_tss_stack(stack_offset);
 
+    println!("Data Descriptor: {:?}", GDT[GDT_KERNEL_DATA]);
+    println!("Code Descriptor: {:?}", GDT[GDT_KERNEL_CODE]);
     // Load the new GDT, which is correctly located in thread local storage
     dtables::lgdt(&GDTR);
 

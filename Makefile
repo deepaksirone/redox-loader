@@ -1,4 +1,4 @@
-REDOX_ROOT=/home/bug/disk2/redox_stuff/redox
+REDOX_ROOT=.
 SHELL=/bin/bash
 
 default: run
@@ -19,7 +19,8 @@ run: build/harddrive.bin build/extra.qcow2
     -drive file=build/harddrive.bin,format=raw \
     -drive file=build/extra.qcow2
 
-
+debug: build/harddrive.bin build/extra.qcow2
+	qemu-system-x86_64 -serial mon:stdio -drive file=build/harddrive.bin,format=raw -drive file=build/extra.qcow2 -s -S 
 build/extra.qcow2:
 	qemu-img create -f qcow2 $@ 1G
 
@@ -43,12 +44,15 @@ build/boot.o: kernel/boot.asm
 build/kernel.bin: kernel/linker.ld cargo
 	ld --gc-sections -z max-page-size=0x1000 -o $@ -T kernel/linker.ld build/libpamb_os.a
 	objcopy --strip-debug $@
-build/harddrive.bin: build/kernel.bin
-	nasm -f bin -o $@ -D ARCH_x86_64 -D KERNEL=build/kernel.bin -i$(REDOX_ROOT)/bootloader/x86_64/ $(REDOX_ROOT)/bootloader/x86_64/disk.asm
+build/real.bin:
+	nasm -f bin -o build/real.bin $(REDOX_ROOT)/bootloader/x86_64/real.asm
+
+build/harddrive.bin: build/kernel.bin build/real.bin
+	nasm -f bin -o $@ -D ARCH_x86_64 -D KERNEL=build/kernel.bin -D REALSTUB=build/real.bin -ibuild/ -i$(REDOX_ROOT)/bootloader/x86_64/ $(REDOX_ROOT)/bootloader/x86_64/disk.asm
 	dd if=/dev/zero bs=512 count=18126 >> $@ 
 
 cargo:
 	mkdir -p build
-	
+	cargo update -p linked_list_allocator --precise 0.6.1 
 	TARGET=. RUST_TARGET_PATH=$(shell pwd) xargo build --target x86_64-pamb_os
 	cp target/x86_64-pamb_os/debug/libpamb_os.a build/libpamb_os.a	
