@@ -50,7 +50,7 @@ startup:
 
 %ifdef REALSTUB  
     mov eax, (drop_to_real_start - boot) / 512
-    mov bx, 0xf000
+    mov bx, 0xb000
     mov ecx, (drop_to_real_start.end - drop_to_real_start)
     add ecx, 511
     shr ecx, 9

@@ -1,5 +1,5 @@
 ; Taken from https://forum.osdev.org/viewtopic.php?f=1&t=23125
-ORG 0xf000
+ORG 0xb000
 SECTION .bios
 USE64
 %define retfq o64 retf
@@ -59,7 +59,7 @@ comp_mode:
 	and eax, 7FFFFFFEh
 	mov cr0, eax
 	
-	mov esp, 0xefff
+	mov esp, 0xafff
 	xor ax, ax
 	mov ds, ax
 	mov es, ax
@@ -122,7 +122,7 @@ real:
        mov          eax, cr0
        or           eax, 80000001h
        mov          cr0, eax
-       jmp         DESC_LONG:comp_again
+       jmp          DESC_LONG:comp_again
        ;db           66h
        ;db           0EAh
        ;dd           comp_again

@@ -80,7 +80,9 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
 {
         let mut active_table  = arch::x86_64::start::kstart(args_ptr);
         let mut mbr = partition::read_bootsector(&mut active_table);
-        partition::drop_to_real(&mut active_table);
+        let mut s = [0;1000];
+        partition::init_real_mode(&mut active_table);
+        partition::read_drive(0x80, &mut s, 0x10); 
 //        assert_eq!(core::mem::align_of::<real_mode::DescriptorTablePointer>(), 17);
 
         println!("Hello World!");
