@@ -30,17 +30,6 @@ build/os.iso: build/kernel.bin kernel/grub.cfg
 	cp build/kernel.bin build/isofiles/boot/
 	grub2-mkrescue -o build/os.iso build/isofiles/
 
-build/multiboot_header.o: kernel/multiboot_header.asm
-	mkdir -p build 
-	nasm -f elf64 kernel/multiboot_header.asm -o build/multiboot_header.o
-
-build/long_mode_init.o: kernel/long_mode_init.asm
-	mkdir -p build
-	nasm -f elf64 kernel/long_mode_init.asm -o build/long_mode_init.o
-build/boot.o: kernel/boot.asm
-	mkdir -p build
-	nasm -f elf64 kernel/boot.asm  -o build/boot.o
-
 build/kernel.bin: kernel/linker.ld cargo
 	ld --gc-sections -z max-page-size=0x1000 -o $@ -T kernel/linker.ld build/libredox_loader.a
 	objcopy --strip-debug $@
