@@ -59,7 +59,7 @@ pub mod graphical_debug;
 //pub mod serial;
 //pub mod device;
 pub mod devices;
-pub mod real_mode;
+//pub mod real_mode;
 //pub mod io;
 //pub mod gdt;
 //pub mod arch;
