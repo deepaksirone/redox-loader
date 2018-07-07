@@ -1,3 +1,3 @@
-# pamb-os
+# Redox Loader Stub
 
-An operating system written in Rust for educational purposes.
+The Redox Loader loads the Redox kernel into memory

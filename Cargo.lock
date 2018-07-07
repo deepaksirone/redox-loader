@@ -36,22 +36,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pamb_os"
-version = "0.1.0"
-dependencies = [
- "bitflags 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "byteorder 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "goblin 0.0.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "linked_list_allocator 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "raw-cpuid 3.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "redox_syscall 0.1.40",
- "rlibc 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "slab_allocator 0.3.1",
- "spin 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "x86 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "plain"
 version = "0.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -71,6 +55,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "cc 1.0.17 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "redox-loader"
+version = "0.1.0"
+dependencies = [
+ "bitflags 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "byteorder 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "goblin 0.0.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "linked_list_allocator 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "raw-cpuid 3.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "redox_syscall 0.1.40",
+ "rlibc 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slab_allocator 0.3.1",
+ "spin 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "x86 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

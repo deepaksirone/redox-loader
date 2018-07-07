@@ -42,17 +42,17 @@ build/boot.o: kernel/boot.asm
 	nasm -f elf64 kernel/boot.asm  -o build/boot.o
 
 build/kernel.bin: kernel/linker.ld cargo
-	ld --gc-sections -z max-page-size=0x1000 -o $@ -T kernel/linker.ld build/libpamb_os.a
+	ld --gc-sections -z max-page-size=0x1000 -o $@ -T kernel/linker.ld build/libredox_loader.a
 	objcopy --strip-debug $@
 build/real.bin:
-	nasm -f bin -o build/real.bin $(REDOX_ROOT)/bootloader/x86_64/real.asm
+	nasm -f bin -o build/real.bin bootloader/x86_64/real.asm
 
 build/harddrive.bin: build/kernel.bin build/real.bin
-	nasm -f bin -o $@ -D ARCH_x86_64 -D KERNEL=build/kernel.bin -D REALSTUB=build/real.bin -ibuild/ -i$(REDOX_ROOT)/bootloader/x86_64/ $(REDOX_ROOT)/bootloader/x86_64/disk.asm
+	nasm -f bin -o $@ -D ARCH_x86_64 -D KERNEL=build/kernel.bin -D REALSTUB=build/real.bin -ibuild/ -ibootloader/x86_64/ bootloader/x86_64/disk.asm
 	dd if=/dev/zero bs=512 count=18126 >> $@ 
 
 cargo:
 	mkdir -p build
 	cargo update -p linked_list_allocator --precise 0.6.1 
-	TARGET=. RUST_TARGET_PATH=$(shell pwd) xargo build --target x86_64-pamb_os
-	cp target/x86_64-pamb_os/debug/libpamb_os.a build/libpamb_os.a	
+	TARGET=. RUST_TARGET_PATH=$(shell pwd) xargo build --target x86_64-redox_loader
+	cp target/x86_64-redox_loader/debug/libredox_loader.a build/libredox_loader.a	

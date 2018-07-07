@@ -83,7 +83,7 @@ pub unsafe fn read_drive(id: u8, buf: &mut [u8], start_sector: u32)
     let ptr = 0xb000 as *const ();
     let n_sectors: usize = (buf.len() + SECTOR_SIZE - 1) / 512;
 
-    let read_func: extern "C" fn(num_sectors: u16, id: u8) = unsafe { mem::transmute(ptr) };
+    let read_func: extern "C" fn(start_lba: u32, num_sectors: u16, id: u8) = unsafe { mem::transmute(ptr) };
 /*
     {
             let page = Page::containing_address(VirtualAddress::new(real_func_addr));
@@ -116,7 +116,7 @@ pub unsafe fn read_drive(id: u8, buf: &mut [u8], start_sector: u32)
          : : : : "intel", "volatile");
 
     // Invokes the code in bootsector/x86_64/real.asm
-    (read_func)(n_sectors as u16, id);
+    (read_func)(start_sector, n_sectors as u16, id);
 
     asm!("pop fs
           pop r11
