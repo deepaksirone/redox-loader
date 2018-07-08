@@ -7,6 +7,7 @@ use core::slice;
 use core::sync::atomic::{AtomicBool, ATOMIC_BOOL_INIT, AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
 
 use allocator;
+use consts;
 #[cfg(feature = "acpi")]
 use acpi;
 #[cfg(feature = "graphical_debug")]
@@ -72,7 +73,7 @@ pub unsafe extern fn kstart(args_ptr: *const KernelArgs) -> ActivePageTable {
         println!("Kernel: {:X}:{:X}", kernel_base, kernel_base + kernel_size);
         println!("Stack: {:X}:{:X}", stack_base, stack_base + stack_size);
         println!("Env: {:X}:{:X}", env_base, env_base + env_size);
-
+        println!("Heap Start: {:X}:{:X}", consts::KERNEL_HEAP_OFFSET, consts::KERNEL_HEAP_OFFSET + consts::KERNEL_HEAP_SIZE);
         // Set up GDT before paging
         gdt::init();
 
