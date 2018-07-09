@@ -123,9 +123,9 @@ hello: db "Hello from real mode", 0
 %endif
 
 real:
-	mov eax, 0
-	mov bx, 0xd000
-	mov cx, 1
+	mov eax, [start_lba]
+	mov bx, 0xc000
+	mov cx, [num_sectors]
 	xor dx, dx
 	call load
 	call test

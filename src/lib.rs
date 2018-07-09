@@ -45,7 +45,7 @@ pub mod allocator;
 pub mod memory;
 pub mod time;
 pub mod elf;
-pub mod partition;
+pub mod fs;
 //pub mod externs;
 //pub mod paging;
 pub mod consts;
@@ -80,10 +80,10 @@ use core::sync::atomic::{AtomicBool, ATOMIC_BOOL_INIT, AtomicUsize, ATOMIC_USIZE
 pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs) -> !
 {
         let mut active_table  = arch::x86_64::start::kstart(args_ptr);
-        let mut mbr = partition::read_bootsector(&mut active_table);
+        let mut mbr = fs::read_bootsector(&mut active_table);
         let mut s = [0;1000];
-        partition::init_real_mode(&mut active_table);
-        partition::read_drive(0x80, &mut s, 0x10); 
+        fs::init_real_mode(&mut active_table);
+        fs::read_drive(0x80, &mut s, 0x10); 
 //        assert_eq!(core::mem::align_of::<real_mode::DescriptorTablePointer>(), 17);
         println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
         println!("Hello World!");
