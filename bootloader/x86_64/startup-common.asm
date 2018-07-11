@@ -8,6 +8,7 @@ args:
     .stack_size dq 0
     .env_base dq 0
     .env_size dq 0
+    .disk db 0
 
 startup:
     ; enable A20-Line via IO-Port 92, might not work on all motherboards
@@ -29,6 +30,9 @@ startup:
         test eax, eax
         jnz error
     %endif
+
+    mov al, [disk]
+    mov [args.disk], al
 
     jmp .loaded_kernel
 
