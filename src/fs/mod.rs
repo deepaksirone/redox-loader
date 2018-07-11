@@ -2,7 +2,7 @@ use memory::Frame;
 use paging::{ActivePageTable, Page, PhysicalAddress, VirtualAddress};
 use paging::entry::EntryFlags;
 use paging::mapper::MapperFlushAll;
-use core::mem;
+use core::{mem, slice};
 use paging;
 
 use self::mbr::Mbr;
@@ -82,13 +82,25 @@ pub unsafe fn init_real_mode(active_table: &mut ActivePageTable)
         
 }
 
+unsafe fn copy_sectors(buf: &mut [u8], avail_bytes: usize, buffer_offset: usize)
+{
+    println!("In Copy Sector");
+    let ptr = 0xc000 as *const u8;
+    let buf_cap = buf.len() - buffer_offset;
+
+    let n_bytes = if buf_cap < avail_bytes { buf_cap } else { avail_bytes };
+    let mut slice = slice::from_raw_parts(ptr, n_bytes);
+    println!("Num Bytes: {}, Buffer Offset: {}", n_bytes, buffer_offset);
+    buf[buffer_offset..buffer_offset+n_bytes].clone_from_slice(&slice);
+
+
+}
 // The main entry point into real mode code
-pub unsafe fn read_drive(id: u8, buf: &mut [u8], start_lba: u32)
+pub unsafe fn read_drive(id: u8,mut buf: &mut [u8], start_lba: u32)
 {
 
-    let real_func_addr = READ_FUNC_ADDR;
     let ptr = READ_FUNC_ADDR as *const ();
-    let n_sectors: usize = (buf.len() + SECTOR_SIZE - 1) / SECTOR_SIZE;
+    let mut n_sectors: usize = (buf.len() + SECTOR_SIZE - 1) / SECTOR_SIZE;
     let num_invokes = (n_sectors + NUM_STORAGE_SECTORS - 1) / NUM_STORAGE_SECTORS;
 
     // TODO: Add exit status
@@ -125,18 +137,22 @@ pub unsafe fn read_drive(id: u8, buf: &mut [u8], start_lba: u32)
          : : : : "intel", "volatile");
 */
     for i in 0..num_invokes {
+        let num_copy_sectors: u16 = if n_sectors > NUM_STORAGE_SECTORS 
+                    { NUM_STORAGE_SECTORS as u16 } else { n_sectors as u16 };
+        let offset: u32 = (i as u32 * NUM_STORAGE_SECTORS as u32);
+        let mut buffer_offset: usize = offset as usize * SECTOR_SIZE as usize;
+        println!("Iter no: {}", i);
         scratch_push!();
         fs_push!();
 
         // Invokes the code in bootsector/x86_64/real.asm
-        (read_func)(start_lba + (i as u32 * NUM_STORAGE_SECTORS as u32), n_sectors as u16, id);
+        (read_func)(start_lba + (i as u32 * NUM_STORAGE_SECTORS as u32), num_copy_sectors, id);
 
         fs_pop!();
         scratch_pop!();
-        
-
-        // Copy code into buffer here
-        
+         
+        copy_sectors(&mut buf, num_copy_sectors as usize * SECTOR_SIZE, buffer_offset);
+        n_sectors -= num_copy_sectors as usize; 
     }
 /*    
     asm!("pop fs

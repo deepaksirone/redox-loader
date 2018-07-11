@@ -11,9 +11,9 @@
 #![feature(allocator_api, heap_api)]
 #![feature(global_allocator)]
 #![feature(core_intrinsics)]
-//#![feature(type_ascription)]
 #![feature(repr_align)]
 #![feature(attr_literals)]
+#![feature(integer_atomics)]
 
 extern crate rlibc;
 extern crate spin;
@@ -72,23 +72,27 @@ static ALLOCATOR: allocator::Allocator = allocator::Allocator;
 //pub mod scheme;
 //pub mod syscall;
 use core::slice;
-use core::sync::atomic::{AtomicBool, ATOMIC_BOOL_INIT, AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
+use core::sync::atomic::{AtomicU8, ATOMIC_U8_INIT, Ordering};
 
 //pub const BLOCK_SIZE: u64 = 4096;
+pub static mut disk: AtomicU8 = ATOMIC_U8_INIT;
 
 #[no_mangle]
 pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs) -> !
 {
+        disk.store((*args_ptr).disk, Ordering::SeqCst);
         let mut active_table  = arch::x86_64::start::kstart(args_ptr);
         let mut mbr = fs::read_bootsector(&mut active_table);
-        let mut s = [0;1000];
+        let mut s = [0;500];
         fs::init_real_mode(&mut active_table);
-        fs::read_drive(0x80, &mut s, 0x10); 
-//        assert_eq!(core::mem::align_of::<real_mode::DescriptorTablePointer>(), 17);
+        fs::read_drive(*(disk.get_mut()), &mut s, 0x0); 
+
         println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
         println!("Hello World!");
         println!("Loader Stub Initialized");
-    
+        for byte in s.iter() {
+            println!("{:x}", byte);
+        }
         loop { }
 }
 
