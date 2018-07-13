@@ -1,5 +1,5 @@
 //! Intrinsics for panic handling
-/*
+
 use interrupt;
 
 #[lang = "eh_personality"]
@@ -21,13 +21,13 @@ pub extern "C" fn rust_begin_unwind(fmt: ::core::fmt::Arguments, file: &str, lin
         unsafe { interrupt::halt(); }
     }
 }
-*/
+
 #[lang = "oom"]
 #[no_mangle]
 pub extern fn rust_oom() -> ! {
     panic!("kernel memory allocation failed");
 }
-/*
+
 #[allow(non_snake_case)]
 #[no_mangle]
 /// Required to handle panics
@@ -36,4 +36,4 @@ pub extern "C" fn _Unwind_Resume() -> ! {
         unsafe { interrupt::halt(); }
     }
 }
-*/
+
