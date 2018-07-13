@@ -2,8 +2,6 @@ use byteorder::{LittleEndian, ByteOrder};
 use core::{slice, mem};
 use core::ops::{Deref, DerefMut};
 
-use paging::PAGE_SIZE;
-
 #[repr(packed)]
 #[derive(Copy, Clone)]
 pub struct MbrTableEntry
@@ -21,8 +19,6 @@ pub struct Mbr
     pub partition_table: [MbrTableEntry; 4],
     /// Signature bytes
     pub signature: [u8; 2],
-    /// Padding
-    pub padding: [u8; PAGE_SIZE - 512]
 }
 
 impl Mbr 
@@ -32,7 +28,6 @@ impl Mbr
             code: [0; 446],
             partition_table: [MbrTableEntry::new(); 4],
             signature: [0; 2],
-            padding: [0; PAGE_SIZE - 512]
         }
     }
     
