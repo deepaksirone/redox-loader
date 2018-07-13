@@ -46,6 +46,7 @@ pub struct KernelArgs {
     stack_size: u64,
     env_base: u64,
     env_size: u64,
+    disk: u8
 }
 
 /// The entry to Rust, all things must be initialized
