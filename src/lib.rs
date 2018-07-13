@@ -75,28 +75,30 @@ use core::slice;
 use core::sync::atomic::{AtomicU8, ATOMIC_U8_INIT, Ordering};
 
 //pub const BLOCK_SIZE: u64 = 4096;
-pub static mut disk: AtomicU8 = ATOMIC_U8_INIT;
+pub static mut DISK: AtomicU8 = ATOMIC_U8_INIT;
 
 #[no_mangle]
 pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs) -> !
 {
-        disk.store((*args_ptr).disk, Ordering::SeqCst);
+        DISK.store((*args_ptr).disk, Ordering::SeqCst);
         let mut active_table  = arch::x86_64::start::kstart(args_ptr);
         let mut mbr = fs::read_bootsector(&mut active_table);
-        let mut s = [0;500];
+        let mut s = [0;1000];
         fs::init_real_mode(&mut active_table);
-        fs::read_drive(*(disk.get_mut()), &mut s, 0x0); 
+        fs::read(*(DISK.get_mut()), &mut s, 510); 
 
         println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
         println!("Hello World!");
         println!("Loader Stub Initialized");
+
         for byte in s.iter() {
             println!("{:x}", byte);
         }
+
         loop { }
 }
-
+/*
 #[lang = "eh_personality"] extern fn eh_personality() {}
 #[no_mangle]
 #[lang = "panic_fmt"] pub extern "C" fn panic_fmt() -> !{ loop {} }
-
+*/
