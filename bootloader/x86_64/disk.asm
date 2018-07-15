@@ -23,6 +23,16 @@ drop_to_real_start:
     drop_to_real_start:
 %endif
 
+%ifdef FAT32
+fat32:
+    %defstr FAT32_STR %[FAT32]
+    incbin FAT32_STR
+    .end:
+    align 512, db 0
+%else
+    fat32:
+%endif
+
 %ifdef KERNEL
     kernel_file:
       %defstr KERNEL_STR %[KERNEL]

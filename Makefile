@@ -23,7 +23,13 @@ debug: build/harddrive.bin build/extra.qcow2
 	qemu-system-x86_64 -serial mon:stdio -drive file=build/harddrive.bin,format=raw -drive file=build/extra.qcow2 -s -S 
 build/extra.qcow2:
 	qemu-img create -f qcow2 $@ 1G
+build/ice.txt:
+	echo "Cookin MC's like a pound of bacon" > build/ice.txt
 
+build/fat32.img: build/ice.txt
+	dd if=/dev/zero of=build/fat32.img bs=512 count=100000
+	mkfs -t fat -F 32 build/fat32.img
+	mcopy -i build/fat32.img build/ice.txt ::.
 build/os.iso: build/kernel.bin kernel/grub.cfg
 	mkdir -p build/isofiles/boot/grub
 	cp kernel/grub.cfg build/isofiles/boot/grub
@@ -36,12 +42,12 @@ build/kernel.bin: kernel/linker.ld cargo
 build/real.bin:
 	nasm -f bin -o build/real.bin bootloader/x86_64/real.asm
 
-build/harddrive.bin: build/kernel.bin build/real.bin
-	nasm -f bin -o $@ -D ARCH_x86_64 -D KERNEL=build/kernel.bin -D REALSTUB=build/real.bin -ibuild/ -ibootloader/x86_64/ bootloader/x86_64/disk.asm
+build/harddrive.bin: build/kernel.bin build/real.bin build/fat32.img
+	nasm -f bin -o $@ -D ARCH_x86_64 -D KERNEL=build/kernel.bin -D REALSTUB=build/real.bin -D FAT32=build/fat32.img -ibuild/ -ibootloader/x86_64/ bootloader/x86_64/disk.asm
 	dd if=/dev/zero bs=512 count=18126 >> $@ 
 
 cargo:
 	mkdir -p build
-	cargo update -p linked_list_allocator --precise 0.6.1 
+	cargo update -p linked_list_allocator --precise 0.6.1
 	TARGET=. RUST_TARGET_PATH=$(shell pwd) xargo build --target x86_64-redox_loader
 	cp target/x86_64-redox_loader/debug/libredox_loader.a build/libredox_loader.a	

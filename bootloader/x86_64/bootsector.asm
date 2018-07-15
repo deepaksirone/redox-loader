@@ -188,6 +188,22 @@ DAPACK:
 .seg:   dw 0 ; in memory page zero
 .addr:  dq 0 ; put the lba to read in this spot
 
+%ifdef FAT32
+times 446-($-$$) db 0
+partition_table:
+	db 0x80
+	db 0
+	db 0
+	db 0
+	db 0xc
+	db 0
+	db 0
+	db 0
+	dd (fat32 - boot) / 512
+	dd (fat32.end - fat32) / 512
+times 48 db 0
+%else
 times 510-($-$$) db 0
+%endif
 db 0x55
 db 0xaa
