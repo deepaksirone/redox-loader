@@ -11,6 +11,7 @@ pub mod mbr;
 pub mod disk;
 
 const SECTOR_SIZE: usize = 512;
+const BOOTSECTOR_ADDR: usize = 0x7c00;
 const DISK_READ_PAGE_START: usize = 0x9000;
 const DISK_READ_STORAGE_START: usize = 0xc000;
 const DISK_READ_PAGE_END: usize = 0x70000 - 1;
@@ -18,12 +19,11 @@ const READ_FUNC_ADDR: usize = 0xb000;
 const NUM_STORAGE_SECTORS: usize = (DISK_READ_PAGE_END - DISK_READ_STORAGE_START + 1) / SECTOR_SIZE;
 
 pub fn read_bootsector(active_table: &mut ActivePageTable) -> Mbr {
-    let mut mbr = Mbr::default();
-    let bootsector_addr = 0x7c00;
-    let follow_up = 0x7c00 + PAGE_SIZE;
+//    let mut mbr = Mbr::default();
+//    let bootsector_addr = 0x7c00;
+//    let follow_up = 0x7c00 + PAGE_SIZE;
 
-    let ret;
-    {
+/*    {
             let page = Page::containing_address(VirtualAddress::new(bootsector_addr));
             let frame = Frame::containing_address(PhysicalAddress::new(page.start_address().get()));
             let result = active_table.map_to(page, frame, EntryFlags::PRESENT | EntryFlags::NO_EXECUTE);
@@ -36,13 +36,12 @@ pub fn read_bootsector(active_table: &mut ActivePageTable) -> Mbr {
             let result = active_table.map_to(page, frame, EntryFlags::PRESENT | EntryFlags::NO_EXECUTE);
             result.flush(active_table);
     }
-
-    {
-            let bootsector = unsafe { &mut *(bootsector_addr as *mut Mbr) };
-            ret = bootsector.clone();
-            println!("Checking if Bootsector is valid: {}", bootsector.is_valid());
-    }
-
+*/
+    let bootsector = unsafe { &mut *(BOOTSECTOR_ADDR as *mut Mbr) };
+    let ret = bootsector.clone();
+    println!("Checking if Bootsector is valid: {}", bootsector.is_valid());
+    
+/*
     {
         let page = Page::containing_address(VirtualAddress::new(bootsector_addr));
         let (result, _frame) = active_table.unmap_return(page, false);
@@ -55,7 +54,7 @@ pub fn read_bootsector(active_table: &mut ActivePageTable) -> Mbr {
         result.flush(active_table);
     }
 
-
+*/
     ret 
 }
 
@@ -66,7 +65,7 @@ pub fn read_bootsector(active_table: &mut ActivePageTable) -> Mbr {
 // 0x70000 onwards is where the paging structures start
 pub unsafe fn init_real_mode(active_table: &mut ActivePageTable)
 {
-    let start_page = Page::containing_address(VirtualAddress::new(DISK_READ_PAGE_START));
+    let start_page = Page::containing_address(VirtualAddress::new(BOOTSECTOR_ADDR));
     let end_page = Page::containing_address(VirtualAddress::new(DISK_READ_PAGE_END));
 
     for page in paging::Page::range_inclusive(start_page, end_page) {
