@@ -40,13 +40,13 @@ static BSP_READY: AtomicBool = ATOMIC_BOOL_INIT;
 
 #[repr(packed)]
 pub struct KernelArgs {
-    kernel_base: u64,
-    kernel_size: u64,
-    stack_base: u64,
-    stack_size: u64,
-    env_base: u64,
-    env_size: u64,
-    disk: u8
+    pub kernel_base: u64,
+    pub kernel_size: u64,
+    pub stack_base: u64,
+    pub stack_size: u64,
+    pub env_base: u64,
+    pub env_size: u64,
+    pub disk: u8
 }
 
 /// The entry to Rust, all things must be initialized
