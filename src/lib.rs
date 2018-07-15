@@ -20,6 +20,7 @@ extern crate spin;
 extern crate syscall;
 extern crate linked_list_allocator;
 extern crate byteorder;
+//extern crate core_io;
 
 #[cfg(feature = "slab")]
 extern crate slab_allocator;
@@ -82,19 +83,21 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
 {
         DISK.store((*args_ptr).disk, Ordering::SeqCst);
         let mut active_table  = arch::x86_64::start::kstart(args_ptr);
+        fs::init_real_mode(&mut active_table);
         let mut mbr = fs::read_bootsector(&mut active_table);
         let mut s = [0;1000];
-        fs::init_real_mode(&mut active_table);
+        let b = fs::disk::Partition::get_bootable(mbr).unwrap();
+        println!("{:?}", b);
         fs::read(*(DISK.get_mut()), &mut s, 510); 
-
+        
         println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
         println!("Hello World!");
         println!("Loader Stub Initialized");
-
+/*
         for byte in s.iter() {
             println!("{:x}", byte);
         }
-
+*/
         loop { }
 }
 /*
