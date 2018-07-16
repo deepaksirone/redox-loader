@@ -9,6 +9,7 @@ use self::mbr::Mbr;
 use paging::PAGE_SIZE;
 pub mod mbr;
 pub mod disk;
+mod fat32;
 
 const SECTOR_SIZE: usize = 512;
 const BOOTSECTOR_ADDR: usize = 0x7c00;
