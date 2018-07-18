@@ -29,7 +29,7 @@ dependencies = [
 
 [[package]]
 name = "linked_list_allocator"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "spin 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -64,7 +64,7 @@ dependencies = [
  "bitflags 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "byteorder 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "goblin 0.0.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "linked_list_allocator 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "linked_list_allocator 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "raw-cpuid 3.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "redox_syscall 0.1.40",
  "rlibc 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -91,7 +91,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "slab_allocator"
 version = "0.3.1"
 dependencies = [
- "linked_list_allocator 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "linked_list_allocator 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "spin 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -114,7 +114,7 @@ dependencies = [
 "checksum byteorder 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "74c0b906e9446b0a2e4f760cdb3fa4b2c48cdc6db8766a845c54b6ff063fd2e9"
 "checksum cc 1.0.18 (registry+https://github.com/rust-lang/crates.io-index)" = "2119ea4867bd2b8ed3aecab467709720b2d55b1bcfe09f772fd68066eaf15275"
 "checksum goblin 0.0.10 (registry+https://github.com/rust-lang/crates.io-index)" = "81af14056c25d33759862c5ae2035452acb1255bfb1b16db57819f183921e259"
-"checksum linked_list_allocator 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)" = "1ee3eeeadfa301cf51b59684c034ad47a9796d03a8b70650d46b6b400a4a3258"
+"checksum linked_list_allocator 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "c8ff3122438431172229f65f54f3c7eb9924a9f14e0df1895756cb19834e3b93"
 "checksum plain 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "595830506990cbd6a1a08ed73bd9b40beb4692f38334885bf25a5daa654c6fae"
 "checksum raw-cpuid 2.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "13b844e4049605ff38fed943f5c7b2c691fad68d9d5bf074d2720554c4e48246"
 "checksum raw-cpuid 3.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "233ec1847057cf4d4591a0d76908aa12812140b11ea7d7d05b4c38cadb069c31"

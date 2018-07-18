@@ -14,6 +14,7 @@
 #![feature(repr_align)]
 #![feature(attr_literals)]
 #![feature(integer_atomics)]
+#![feature(panic_implementation)]
 
 extern crate rlibc;
 extern crate spin;
