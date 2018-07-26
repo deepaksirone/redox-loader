@@ -6,12 +6,17 @@ pub struct Disk {
     pub id: u8
 }
 
+
 #[derive(Copy, Clone, Debug)]
 pub enum Fs {
     FAT32,
     Other
 }
 
+#[derive(Copy, Clone, Debug)]
+pub struct PartitionTable {
+    pub partitions: [Partition; 4]
+}
 
 pub struct SystemId(u8);
 
@@ -19,7 +24,7 @@ impl SystemId {
     fn get_fs(&self) -> Fs {
         match self.0 {
             0x0c => Fs::FAT32,
-            _ => panic!("Unsupported partition")
+            _ => { println!("Unsupported partition"); Fs::Other }
         }
     }
 }
@@ -40,25 +45,48 @@ pub struct Partition {
 
 impl Partition {
 
-    pub fn get_bootable(mbr: Mbr) -> Option<Partition> {
-        for partition in mbr.partition_table.iter() {
-            if partition.is_bootable() {
-                println!("Found bootable partition");
-                let systemid = SystemId(partition.system_id());
-                return Some(Partition {
-                    start_sector: partition.starting_lba(),
-                    length: partition.partition_length() as usize,
-                    relative_pos: 0,
-                    fs: systemid.get_fs(),
-                    is_boot: true
-                })
+    pub fn default() -> Partition {
+        Partition {
+            start_sector: 0,
+            length: 0,
+            relative_pos: 0,
+            fs: Fs::Other,
+            is_boot: false
+        }
+    }
+
+    
+}
+
+impl PartitionTable {
+
+    pub fn new(mbr: &Mbr) -> PartitionTable {
+        let mut table = PartitionTable { partitions: [Partition::default(); 4] };
+        for (idx, partition) in mbr.partition_table.iter().enumerate() {
+            let systemid = SystemId(partition.system_id());
+            table.partitions[idx] = Partition { 
+                start_sector: partition.starting_lba(), 
+                length: partition.partition_length() as usize, 
+                relative_pos: 0, 
+                fs: systemid.get_fs(), 
+                is_boot: partition.is_bootable()
+            };
+        
+        }
+
+        table
+    }
+    
+    pub fn get_bootable(&self) -> Option<Partition> {
+        for partition in self.partitions.iter() {
+            if partition.is_boot {
+                return Some(partition.clone())
             }
         }
         None
     }
 
 }
-
 /*
 impl Read for Partition {
     
@@ -66,4 +94,4 @@ impl Read for Partition {
     
 
 }
-*/
+1*/

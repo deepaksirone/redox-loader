@@ -11,7 +11,7 @@ pub mod mbr;
 pub mod disk;
 mod fat32;
 
-const SECTOR_SIZE: usize = 512;
+pub const SECTOR_SIZE: usize = 512;
 const BOOTSECTOR_ADDR: usize = 0x7c00;
 const DISK_READ_PAGE_START: usize = 0x9000;
 const DISK_READ_STORAGE_START: usize = 0xc000;
@@ -19,7 +19,7 @@ const DISK_READ_PAGE_END: usize = 0x70000 - 1;
 const READ_FUNC_ADDR: usize = 0xb000;
 const NUM_STORAGE_SECTORS: usize = (DISK_READ_PAGE_END - DISK_READ_STORAGE_START + 1) / SECTOR_SIZE;
 
-pub fn read_bootsector(active_table: &mut ActivePageTable) -> Mbr {
+pub fn read_bootsector() -> Mbr {
 //    let mut mbr = Mbr::default();
 //    let bootsector_addr = 0x7c00;
 //    let follow_up = 0x7c00 + PAGE_SIZE;
@@ -96,7 +96,8 @@ fn copy_bytes(buf: &mut [u8], stored_bytes: usize, buffer_offset: usize, sector_
 // The main entry point into real mode code
 pub fn read(id: u8, buf: &mut [u8], offset: usize)
 {
-
+    println!("In Read");
+    println!("id : {}, offset : {}", id, offset);
     let ptr = READ_FUNC_ADDR as *const ();
     let start_sector = offset / SECTOR_SIZE;
     let end_sector = (offset + buf.len() - 1) / SECTOR_SIZE;

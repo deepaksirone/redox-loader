@@ -21,6 +21,7 @@ extern crate spin;
 extern crate syscall;
 extern crate linked_list_allocator;
 extern crate byteorder;
+extern crate fat;
 //extern crate core_io;
 
 #[cfg(feature = "slab")]
@@ -85,20 +86,27 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
         DISK.store((*args_ptr).disk, Ordering::SeqCst);
         let mut active_table  = arch::x86_64::start::kstart(args_ptr);
         fs::init_real_mode(&mut active_table);
-        let mut mbr = fs::read_bootsector(&mut active_table);
-        let mut s = [0;1000];
-        let b = fs::disk::Partition::get_bootable(mbr).unwrap();
-        println!("{:?}", b);
-        fs::read(*(DISK.get_mut()), &mut s, 510); 
+        let mut mbr = fs::read_bootsector();
+        let mut s = [0;78];
+//        let b = fs::disk::PartitionTable::get_bootable(mbr).unwrap();
+        let part_table = fs::disk::PartitionTable::new(&mbr);
+
+        println!("{:?}", part_table);
+//        fs::read(*(DISK.get_mut()), &mut s, 510); 
         
+        let boot_partition = part_table.get_bootable().unwrap();
+        let fat_fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
+        let root = fat_fs.root().expect("Root Error");
+        root.open_file("ice.txt").expect("Open Error").unwrap().read(&mut s);
+
         println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
         println!("Hello World!");
         println!("Loader Stub Initialized");
-/*
+
         for byte in s.iter() {
-            println!("{:x}", byte);
+            print!("{}", *byte as char);
         }
-*/
+
         loop { }
 }
 /*
