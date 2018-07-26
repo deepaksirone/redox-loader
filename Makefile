@@ -15,7 +15,7 @@ run_iso: build/os.iso
 	qemu-system-x86_64 -cdrom build/os.iso
 	
 run: build/harddrive.bin build/extra.qcow2
-	SDL_VIDEO_X11_DGAMOUSE=0 qemu-system-x86_64 -serial mon:stdio -d cpu_reset -d guest_errors -smp 4 -m 2048 -machine q35 -device ich9-intel-hda -device hda-duplex -net nic,model=e1000 -net user -net dump,file=build/network.pcap -device nec-usb-xhci,id=xhci -device usb-tablet,bus=xhci.0 -s \
+	SDL_VIDEO_X11_DGAMOUSE=0 qemu-system-x86_64 -serial mon:stdio -d cpu_reset -d guest_errors -smp 4 -m 2048 -machine q35 -net nic,model=e1000 -net user -net dump,file=build/network.pcap -device nec-usb-xhci,id=xhci -device usb-tablet,bus=xhci.0 -s \
     -drive file=build/harddrive.bin,format=raw \
     -drive file=build/extra.qcow2
 
@@ -24,7 +24,7 @@ debug: build/harddrive.bin build/extra.qcow2
 build/extra.qcow2:
 	qemu-img create -f qcow2 $@ 1G
 build/ice.txt:
-	echo "Cookin MC's like a pound of bacon" > build/ice.txt
+	echo "Burning 'em, if you ain't quick and nimble. I go crazy when I hear a cymbal." > build/ice.txt
 
 build/fat32.img: build/ice.txt
 	dd if=/dev/zero of=build/fat32.img bs=512 count=100000
