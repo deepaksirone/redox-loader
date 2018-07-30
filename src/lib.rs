@@ -22,7 +22,6 @@ extern crate syscall;
 extern crate linked_list_allocator;
 extern crate byteorder;
 extern crate fat;
-//extern crate core_io;
 
 #[cfg(feature = "slab")]
 extern crate slab_allocator;
@@ -76,7 +75,7 @@ static ALLOCATOR: allocator::Allocator = allocator::Allocator;
 //pub mod syscall;
 use core::slice;
 use core::sync::atomic::{AtomicU8, ATOMIC_U8_INIT, Ordering};
-
+use alloc::Vec;
 //pub const BLOCK_SIZE: u64 = 4096;
 pub static mut DISK: AtomicU8 = ATOMIC_U8_INIT;
 
@@ -97,7 +96,7 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
         let boot_partition = part_table.get_bootable().unwrap();
         let fat_fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
         let root = fat_fs.root().expect("Root Error");
-        root.open_file("ice.txt").expect("Open Error").unwrap().read(&mut s);
+//        root.open_file("ice.txt").expect("Open Error").unwrap().read(&mut s);
 
         println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
         println!("Hello World!");
@@ -108,6 +107,14 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
         }
 
         loop { }
+}
+
+fn read_kernel(filesystem: &mut FatFileSystem::<fs::disk::Partition>)
+{
+      let root = filesystem.root().expect("Root Error");
+      let kernel_file = filesystem.open_file("kernel").expect("Kernel Open Error");
+      let vec: Vec<u8> = Vec::new();
+      println!("Kernel File Size : {}", kernel_file.size());
 }
 /*
 #[lang = "eh_personality"] extern fn eh_personality() {}
