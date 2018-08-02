@@ -20,42 +20,11 @@ const READ_FUNC_ADDR: usize = 0xb000;
 const NUM_STORAGE_SECTORS: usize = (DISK_READ_PAGE_END - DISK_READ_STORAGE_START + 1) / SECTOR_SIZE;
 
 pub fn read_bootsector() -> Mbr {
-//    let mut mbr = Mbr::default();
-//    let bootsector_addr = 0x7c00;
-//    let follow_up = 0x7c00 + PAGE_SIZE;
 
-/*    {
-            let page = Page::containing_address(VirtualAddress::new(bootsector_addr));
-            let frame = Frame::containing_address(PhysicalAddress::new(page.start_address().get()));
-            let result = active_table.map_to(page, frame, EntryFlags::PRESENT | EntryFlags::NO_EXECUTE);
-            result.flush(active_table);
-    }
-
-    {
-            let page = Page::containing_address(VirtualAddress::new(follow_up));
-            let frame = Frame::containing_address(PhysicalAddress::new(page.start_address().get()));
-            let result = active_table.map_to(page, frame, EntryFlags::PRESENT | EntryFlags::NO_EXECUTE);
-            result.flush(active_table);
-    }
-*/
     let bootsector = unsafe { &mut *(BOOTSECTOR_ADDR as *mut Mbr) };
     let ret = bootsector.clone();
     println!("Checking if Bootsector is valid: {}", bootsector.is_valid());
     
-/*
-    {
-        let page = Page::containing_address(VirtualAddress::new(bootsector_addr));
-        let (result, _frame) = active_table.unmap_return(page, false);
-        result.flush(active_table);
-    }
-
-    {
-        let page = Page::containing_address(VirtualAddress::new(follow_up));
-        let (result, _frame) = active_table.unmap_return(page, false);
-        result.flush(active_table);
-    }
-
-*/
     ret 
 }
 
@@ -79,7 +48,7 @@ pub unsafe fn init_real_mode(active_table: &mut ActivePageTable)
 
 fn copy_bytes(buf: &mut [u8], stored_bytes: usize, buffer_offset: usize, sector_offset: usize) -> usize
 {
-    println!("In copy_sectors");
+//    println!("In copy_sectors");
     let ptr = (DISK_READ_STORAGE_START + sector_offset) as *const u8;
     let buf_cap = buf.len() - buffer_offset;
     
@@ -87,8 +56,8 @@ fn copy_bytes(buf: &mut [u8], stored_bytes: usize, buffer_offset: usize, sector_
     let n_bytes = if buf_cap < avail_bytes { buf_cap } else { avail_bytes };
 
     let mut slice = unsafe { slice::from_raw_parts(ptr, n_bytes) };
-    println!("stored_bytes: {}, buffer_offser: {}, sector_offset: {}, n_bytes: {}", 
-             stored_bytes, buffer_offset, sector_offset, n_bytes);
+//    println!("stored_bytes: {}, buffer_offser: {}, sector_offset: {}, n_bytes: {}", 
+//             stored_bytes, buffer_offset, sector_offset, n_bytes);
     buf[buffer_offset..buffer_offset+n_bytes].clone_from_slice(&slice);
     n_bytes
 }
@@ -96,8 +65,8 @@ fn copy_bytes(buf: &mut [u8], stored_bytes: usize, buffer_offset: usize, sector_
 // The main entry point into real mode code
 pub fn read(id: u8, buf: &mut [u8], offset: usize)
 {
-    println!("In Read");
-    println!("id : {}, offset : {}", id, offset);
+//    println!("In Read");
+//    println!("id : {}, offset : {}, sector: {}, buf_cap: {}", id, offset, offset >> 9, buf.len());
     let ptr = READ_FUNC_ADDR as *const ();
     let start_sector = offset / SECTOR_SIZE;
     let end_sector = (offset + buf.len() - 1) / SECTOR_SIZE;

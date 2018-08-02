@@ -27,9 +27,11 @@ build/ice.txt:
 	echo "Burning 'em, if you ain't quick and nimble. I go crazy when I hear a cymbal." > build/ice.txt
 
 build/fat32.img: build/ice.txt
-	dd if=/dev/zero of=build/fat32.img bs=512 count=100000
+	dd if=/dev/zero of=build/fat32.img bs=512 count=1000000
 	mkfs -t fat -F 32 build/fat32.img
 	mcopy -i build/fat32.img build/ice.txt ::.
+	mcopy -i build/fat32.img kernel.dat ::.
+	mcopy -i build/fat32.img build/kernel.bin ::.
 build/os.iso: build/kernel.bin kernel/grub.cfg
 	mkdir -p build/isofiles/boot/grub
 	cp kernel/grub.cfg build/isofiles/boot/grub
