@@ -46,6 +46,7 @@ pub unsafe fn init_real_mode(active_table: &mut ActivePageTable)
         
 }
 
+#[inline(never)]
 fn copy_bytes(buf: &mut [u8], stored_bytes: usize, buffer_offset: usize, sector_offset: usize) -> usize
 {
 //    println!("In copy_sectors");
@@ -63,6 +64,7 @@ fn copy_bytes(buf: &mut [u8], stored_bytes: usize, buffer_offset: usize, sector_
 }
 
 // The main entry point into real mode code
+#[inline(never)]
 pub fn read(id: u8, buf: &mut [u8], offset: usize)
 {
 //    println!("In Read");
