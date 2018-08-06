@@ -103,6 +103,7 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
         println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
         println!("Hello World!");
         println!("Loader Stub Initialized");
+        println!("Loading Kernel..");
         loader::load_kernel(&mut active_table, &mut fat_fs);
         println!("Kernel Loaded :)");
 /*        for byte in vec.iter() {
