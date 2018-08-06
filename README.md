@@ -1,3 +1,3 @@
 # Redox Loader Stub
 
-The Redox Loader loads the Redox kernel into memory
+[WIP] The Redox Loader loads the Redox kernel into memory

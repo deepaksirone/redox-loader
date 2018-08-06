@@ -8,6 +8,7 @@ use paging::{ActivePageTable, Page, VirtualAddress, PhysicalAddress};
 use paging::entry::EntryFlags;
 use paging::mapper::MapperFlushAll;
 use consts;
+use interrupt;
 
 pub const KERNEL: &'static str = "kernel.dat";
 static KERNEL_LOAD_ADDRESS: usize = 0x400000;
@@ -114,7 +115,7 @@ pub fn load_kernel<T: StorageDevice> (active_table: &mut ActivePageTable, fs: &m
         KERNEL_ENTRY = *((KERNEL_LOAD_ADDRESS + 0x18) as usize as *const u64);
         println!("Running kernel");
         asm!("mov rsp, $0" : : "r"(STACK_VIRTUAL + STACK_SIZE) : "memory" : "intel", "volatile");
-        asm!("cli");
+        interrupt::disable();
         enter();
     }
     
