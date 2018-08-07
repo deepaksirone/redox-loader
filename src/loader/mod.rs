@@ -1,7 +1,7 @@
 extern crate fat;
 use fat::{FatFileSystem, StorageDevice};
-use core::{slice, mem};
-use alloc::Vec;
+use core::{slice, mem, ptr};
+use alloc::{Vec, String};
 use memory::Frame;
 use paging;
 use paging::{ActivePageTable, Page, VirtualAddress, PhysicalAddress};
@@ -67,7 +67,7 @@ fn init_kernel_copy(active_table: &mut ActivePageTable, filesize: usize)
 
 
     let start_page = Page::containing_address(VirtualAddress::new(KERNEL_LOAD_ADDRESS + consts::KERNEL_OFFSET));
-    let end_page = Page::containing_address(VirtualAddress::new(KERNEL_LOAD_ADDRESS + consts::KERNEL_OFFSET + filesize + 0xA000000));
+    let end_page = Page::containing_address(VirtualAddress::new(KERNEL_LOAD_ADDRESS + consts::KERNEL_OFFSET + 0x40000000));
     
     for page in paging::Page::range_inclusive(start_page, end_page) {
         let frame = Frame::containing_address(PhysicalAddress::new(page.start_address().get() - consts::KERNEL_OFFSET));
@@ -110,9 +110,13 @@ pub fn load_kernel<T: StorageDevice> (active_table: &mut ActivePageTable, fs: &m
         }
 */
     }
+    let env = String::from("REDOXFS_UUID=4bf86d4a-28ae-4ad6-8cc3-a0e447192168");
+
     unsafe {
         KERNEL_SIZE = kernel_file.size() as usize;
         KERNEL_ENTRY = *((KERNEL_LOAD_ADDRESS + 0x18) as usize as *const u64);
+        ENV_SIZE = env.len() as usize;
+        ptr::copy(env.as_ptr(), STACK_VIRTUAL as *mut u8, env.len());
         println!("Running kernel");
         asm!("mov rsp, $0" : : "r"(STACK_VIRTUAL + STACK_SIZE) : "memory" : "intel", "volatile");
         interrupt::disable();

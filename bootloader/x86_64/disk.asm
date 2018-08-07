@@ -13,24 +13,16 @@ startup_start:
 align 512, db 0
 startup_end:
 
-%ifdef REALSTUB
-drop_to_real_start:
-    %defstr REALSTUB_STR %[REALSTUB]
-    incbin REALSTUB_STR
-    .end:
-    align 512, db 0
-%else
-    drop_to_real_start:
-%endif
+%define FS_BLOCK_SHIFT 12
+%define FS_BLOCK_SIZE (1 << FS_BLOCK_SHIFT)
 
-%ifdef FAT32
-fat32:
-    %defstr FAT32_STR %[FAT32]
-    incbin FAT32_STR
+align FS_BLOCK_SIZE, db 0
+%ifdef REDOXFS
+redox_fs:
+    %defstr REDOXFS_STR %[REDOXFS]
+    incbin REDOXFS_STR
     .end:
-    align 512, db 0
-%else
-    fat32:
+    align FS_BLOCK_SIZE, db 0
 %endif
 
 %ifdef KERNEL
@@ -51,3 +43,27 @@ fat32:
         filesystem:
     %endif
 %endif
+
+
+align FS_BLOCK_SIZE, db 0
+%ifdef REALSTUB
+drop_to_real_start:
+    %defstr REALSTUB_STR %[REALSTUB]
+    incbin REALSTUB_STR
+    .end:
+    align FS_BLOCK_SIZE, db 0
+%else
+    drop_to_real_start:
+%endif
+
+align FS_BLOCK_SIZE, db 0
+%ifdef FAT32
+fat32:
+    %defstr FAT32_STR %[FAT32]
+    incbin FAT32_STR
+    .end:
+    align FS_BLOCK_SIZE, db 0
+%else
+    fat32:
+%endif
+

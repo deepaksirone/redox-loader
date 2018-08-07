@@ -96,6 +96,7 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
 //        fs::read(*(DISK.get_mut()), &mut s, 510); 
         
         let boot_partition = part_table.get_bootable().unwrap();
+        println!("HERE!");
         let mut fat_fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
 //        let root = fat_fs.root().expect("Root Error");
 //        root.open_file("ice.txt").expect("Open Error").unwrap().read(vec.as_mut_slice());
