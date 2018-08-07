@@ -218,6 +218,6 @@ comp_again:
 	lidt [_start.idt64]                        ;restore idt
 	mov rsp, qword [_start.stckptr]           ;restore stack
 	;must be a non rip-relative jump
-	;sti
+	sti
 	pop rbp
 	ret
