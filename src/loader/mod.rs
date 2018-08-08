@@ -47,7 +47,7 @@ unsafe fn enter() -> ! {
 
 fn init_kernel_copy(active_table: &mut ActivePageTable, filesize: usize)
 {
-    let start_page = Page::containing_address(VirtualAddress::new(KERNEL_LOAD_ADDRESS));
+/*    let start_page = Page::containing_address(VirtualAddress::new(KERNEL_LOAD_ADDRESS));
     let end_page = Page::containing_address(VirtualAddress::new(KERNEL_LOAD_ADDRESS + filesize));
     
     for page in paging::Page::range_inclusive(start_page, end_page) {
@@ -55,7 +55,7 @@ fn init_kernel_copy(active_table: &mut ActivePageTable, filesize: usize)
         let result = active_table.map_to(page, frame, EntryFlags::PRESENT | EntryFlags::WRITABLE);
         result.flush(active_table);
     }
-    
+*/    
     let start_page = Page::containing_address(VirtualAddress::new(0x0));
     let end_page = Page::containing_address(VirtualAddress::new(0x7000 - 1));
     
@@ -67,7 +67,7 @@ fn init_kernel_copy(active_table: &mut ActivePageTable, filesize: usize)
 
 
     let start_page = Page::containing_address(VirtualAddress::new(KERNEL_LOAD_ADDRESS + consts::KERNEL_OFFSET));
-    let end_page = Page::containing_address(VirtualAddress::new(KERNEL_LOAD_ADDRESS + consts::KERNEL_OFFSET + 0x40000000));
+    let end_page = Page::containing_address(VirtualAddress::new(KERNEL_LOAD_ADDRESS + consts::KERNEL_OFFSET + filesize));
     
     for page in paging::Page::range_inclusive(start_page, end_page) {
         let frame = Frame::containing_address(PhysicalAddress::new(page.start_address().get() - consts::KERNEL_OFFSET));
@@ -96,7 +96,7 @@ pub fn load_kernel<T: StorageDevice> (active_table: &mut ActivePageTable, fs: &m
     println!("Kernel File Size: {}", kernel_file.size());
     init_kernel_copy(active_table, kernel_file.size() as usize);
     let num_invokes = (kernel_file.size() + (1024 * 1024) - 1) / (1024 * 1024);
-    let mut addr = KERNEL_LOAD_ADDRESS;
+    let mut addr = KERNEL_LOAD_ADDRESS + consts::KERNEL_OFFSET;
     
     println!("Num Invokes: {}", num_invokes);
     for i in 0..num_invokes {
@@ -114,7 +114,7 @@ pub fn load_kernel<T: StorageDevice> (active_table: &mut ActivePageTable, fs: &m
 
     unsafe {
         KERNEL_SIZE = kernel_file.size() as usize;
-        KERNEL_ENTRY = *((KERNEL_LOAD_ADDRESS + 0x18) as usize as *const u64);
+        KERNEL_ENTRY = *((KERNEL_LOAD_ADDRESS + consts::KERNEL_OFFSET + 0x18) as usize as *const u64);
         ENV_SIZE = env.len() as usize;
         ptr::copy(env.as_ptr(), STACK_VIRTUAL as *mut u8, env.len());
         println!("Running kernel");

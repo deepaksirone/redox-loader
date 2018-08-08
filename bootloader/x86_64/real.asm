@@ -57,6 +57,16 @@ DESC_LONG equ $-.gdt
 	db 0
 DESC_REAL equ $-.gdt
 	dd           0000FFFFh,00009a00h      ;16 bit real mode cs (modify base if needed!)
+DESC_REAL_DATA equ $ - .gdt
+    istruc GDTEntry
+        at GDTEntry.limitl,        dw 0xFFFF
+        at GDTEntry.basel,         dw 0x0
+        at GDTEntry.basem,         db 0x0
+        at GDTEntry.attribute,        db attrib.present | attrib.user | attrib.writable
+        at GDTEntry.flags__limith, db 0xFF | flags.granularity | flags.default_operand_size
+        at GDTEntry.baseh,         db 0x0
+    ;iend
+
 .gdtend equ $-.gdt 
 	align        16, db 0
 .idt64:
@@ -69,19 +79,28 @@ DESC_REAL equ $-.gdt
 
 USE16
 comp_mode:
+	mov ax, DESC_REAL_DATA
+	mov es, ax
+	mov ds, ax
+	mov ss, ax
+
 	mov eax, cr0
 	and eax, 7FFFFFFEh
 	mov cr0, eax
 	
-	mov esp, 0xafff
+
 	xor ax, ax
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
 	mov ss, ax
+	mov sp, 0xafff
 
-	jmp 0h:real
+	;jmp 0h:real
+	push ax
+	push word real
+	retf
 
 %ifdef COMMENT
 print_line:
@@ -218,6 +237,8 @@ comp_again:
 	lidt [_start.idt64]                        ;restore idt
 	mov rsp, qword [_start.stckptr]           ;restore stack
 	;must be a non rip-relative jump
-	sti
+	;sti
 	pop rbp
 	ret
+%include "descriptor_flags.inc"
+%include "gdt_entry.inc"
