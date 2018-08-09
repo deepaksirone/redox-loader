@@ -14,6 +14,7 @@ pub const KERNEL: &'static str = "kernel.dat";
 static KERNEL_LOAD_ADDRESS: usize = 0x400000;
 static mut KERNEL_SIZE: usize = 0;
 static mut KERNEL_ENTRY: u64 = 0;
+
 static COPY_KERNEL_ADDR: usize = 0x9000;
 static STACK_PHYSICAL: usize = 0x80000;
 static STACK_VIRTUAL: usize = 0xFFFFFF0000080000;
@@ -51,7 +52,7 @@ fn init_kernel_copy(active_table: &mut ActivePageTable, filesize: usize)
 
 }
 
-pub fn load_kernel<T: StorageDevice> (active_table: &mut ActivePageTable, fs: &mut FatFileSystem::<T>)
+pub fn load_kernel<T: StorageDevice> (active_table: &mut ActivePageTable, fs: &mut FatFileSystem<T>)
 {
     let root = fs.root().expect("Root Error");
     let mut kernel_file = root.open_file(KERNEL).expect("Kernel Open Error").expect("Kernel Open Error");
@@ -63,15 +64,9 @@ pub fn load_kernel<T: StorageDevice> (active_table: &mut ActivePageTable, fs: &m
     
     println!("Num Invokes: {}", num_invokes);
     for i in 0..num_invokes {
-//        println!("In loop");
         
         let read_bytes = kernel_file.read(vec.as_mut_slice()).expect("Kernel Read Error") as usize;
         addr += copy_slice_to_addr(&vec.as_slice()[0..read_bytes], addr);
-//        vec.clear();
-/*        for byte in vec.iter() {
-            print!("{}", *byte as char);
-        }
-*/
     }
     //TODO: Read redoxfs uid from disk
     let env = String::from("REDOXFS_UUID=4bf86d4a-28ae-4ad6-8cc3-a0e447192168");
@@ -82,8 +77,6 @@ pub fn load_kernel<T: StorageDevice> (active_table: &mut ActivePageTable, fs: &m
         ENV_SIZE = env.len() as usize;
         ptr::copy(env.as_ptr(), STACK_VIRTUAL as *mut u8, env.len());
         println!("Copying kernel to 1MB");
-//        asm!("mov rsp, $0" : : "r"(STACK_VIRTUAL + STACK_SIZE) : "memory" : "intel", "volatile");
-//        interrupt::disable();
         enter();
     }
     
