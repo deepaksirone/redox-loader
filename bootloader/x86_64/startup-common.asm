@@ -60,6 +60,16 @@ startup:
     shr ecx, 9
     xor dx, dx
     call load
+%endif
+
+%ifdef INITSTUB  
+    mov eax, (drop_for_init_start - boot) / 512
+    mov bx, 0x9000
+    mov ecx, (drop_for_init_start.end - drop_for_init_start)
+    add ecx, 511
+    shr ecx, 9
+    xor dx, dx
+    call load
 %endif    
     jmp startup_arch
 

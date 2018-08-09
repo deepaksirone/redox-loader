@@ -29,7 +29,8 @@ pub fn read_bootsector() -> Mbr {
 }
 
 // Set the page table mappings for disk reads
-// Pages 0x9000 and 0xa000 serve as the real mode stack
+// Page 0x9000 contains the kernel jump code
+// Page 0xa000 serves as the real mode stack
 // Pages 0xb000 is where the real.asm code is put
 // Pages 0xc000 to 0x70000 are for the reads into memory
 // 0x70000 onwards is where the paging structures start

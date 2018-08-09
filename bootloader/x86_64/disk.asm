@@ -57,6 +57,19 @@ drop_to_real_start:
 %endif
 
 align FS_BLOCK_SIZE, db 0
+%ifdef INITSTUB
+drop_for_init_start:
+    %defstr INITSTUB_STR %[INITSTUB]
+    incbin INITSTUB_STR
+    .end:
+    align FS_BLOCK_SIZE, db 0
+%else
+    drop_for_init_start:
+%endif
+
+
+
+align FS_BLOCK_SIZE, db 0
 %ifdef FAT32
 fat32:
     %defstr FAT32_STR %[FAT32]
