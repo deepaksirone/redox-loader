@@ -87,11 +87,3 @@ impl PartitionTable {
     }
 
 }
-/*
-impl Read for Partition {
-    
-
-    
-
-}
-1*/
