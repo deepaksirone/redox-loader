@@ -15,6 +15,7 @@
 #![feature(attr_literals)]
 #![feature(integer_atomics)]
 #![feature(panic_implementation)]
+#![feature(extern_prelude)]
 
 extern crate rlibc;
 extern crate spin;
@@ -60,7 +61,7 @@ pub use consts::*;
 static ALLOCATOR: allocator::Allocator = allocator::Allocator;
 use core::slice;
 use core::sync::atomic::{AtomicU8, ATOMIC_U8_INIT, Ordering};
-use alloc::Vec;
+use fs::disk::{File, Fs};
 pub static mut DISK: AtomicU8 = ATOMIC_U8_INIT;
 
 #[no_mangle]
@@ -75,12 +76,22 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
         println!("{:?}", part_table);
         
         let boot_partition = part_table.get_bootable().unwrap();
-        let mut fat_fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
+        let mut fs;
+        let mut fs_root;
+        let kernel_file = match boot_partition.fs {
+               Fs::FAT32 => {
+                        fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
+                        fs_root = fs.root().expect("Root Error");
+                        File { file: fs_root.open_file("kernel.dat").expect("Kernel not found").expect("Unwrap Error") } },
+               Fs::Other => panic!("Unsupported boot partition")
+        };
+
+            
 
         println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
         println!("Loader Stub Initialized");
         println!("Loading Kernel..");
-        loader::load_kernel(&mut active_table, &mut fat_fs);
+        loader::load_kernel(&mut active_table, kernel_file);
         println!("Kernel Loaded :)");
         loop { }
 }

@@ -9,6 +9,7 @@ use paging::entry::EntryFlags;
 use paging::mapper::MapperFlushAll;
 use consts;
 use interrupt;
+use fs::disk::{File, FileOps};
 
 pub const KERNEL: &'static str = "kernel.dat";
 static KERNEL_LOAD_ADDRESS: usize = 0x400000;
@@ -52,10 +53,10 @@ fn init_kernel_copy(active_table: &mut ActivePageTable, filesize: usize)
 
 }
 
-pub fn load_kernel<T: StorageDevice> (active_table: &mut ActivePageTable, fs: &mut FatFileSystem<T>)
+pub fn load_kernel<T: FileOps> (active_table: &mut ActivePageTable, mut kernel_file: T)
 {
-    let root = fs.root().expect("Root Error");
-    let mut kernel_file = root.open_file(KERNEL).expect("Kernel Open Error").expect("Kernel Open Error");
+    //let root = fs.root().expect("Root Error");
+    //let mut kernel_file = root.open_file(KERNEL).expect("Kernel Open Error").expect("Kernel Open Error");
     let mut vec: Vec<u8> = vec![0; 1024 * 1024];
     println!("Kernel File Size: {}", kernel_file.size());
     init_kernel_copy(active_table, kernel_file.size() as usize);

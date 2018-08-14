@@ -20,6 +20,32 @@ pub struct PartitionTable {
 
 pub struct SystemId(u8);
 
+pub struct File<T> {
+    pub file: T,
+}
+
+#[derive(Clone, Debug, Copy)]
+pub enum FsError {
+    ReadError,
+    WriteError,
+    SeekError
+}
+
+pub trait FileOps {
+    fn read(&mut self, buf: &mut [u8]) -> Result<usize, FsError>;
+    fn write(&mut self, buf: &mut [u8]) -> Result<usize, FsError>;
+    fn seek(&mut self, pos: SeekFrom) -> Result<u64, FsError>;
+    fn size(&self) -> usize; 
+}
+
+pub enum SeekFrom {
+    Start(u64),
+    End(i64),
+    Current(i64),
+}
+
+
+
 impl SystemId {
     fn get_fs(&self) -> Fs {
         match self.0 {

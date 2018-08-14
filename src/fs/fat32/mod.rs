@@ -4,6 +4,8 @@ use fs::disk::{PartitionTable, Partition};
 use fat::{FatResult, DeviceStatus, StorageDevice, SectorOffset, FatError};
 use fat::DeviceStatus::Normal;
 use fs::SECTOR_SIZE; 
+use fs::disk::{FileOps, File, FsError, SeekFrom};
+
 
 impl StorageDevice for Partition {
 
@@ -39,4 +41,25 @@ impl StorageDevice for Partition {
 
 }
 
+impl<'a> FileOps for File<fat::File<'a, Partition>> {
+    fn read(&mut self, buf: &mut [u8]) -> Result<usize, FsError>
+    {
+        match self.file.read(buf) {
+            Ok(size) => Ok(size as usize),
+            Err(err) => Err(FsError::ReadError)
+        }
+    }
+
+    fn write(&mut self, buf: &mut [u8]) -> Result<usize, FsError> {
+        Ok(0)
+    }
+
+    fn seek(&mut self, pos: SeekFrom) -> Result<u64, FsError> {
+        Ok(0)
+    }
+
+    fn size(&self) -> usize {
+        self.file.size() as usize
+    }
+}
 
