@@ -22,6 +22,7 @@ pub struct SystemId(u8);
 
 pub struct File<T> {
     pub file: T,
+    pub offset: usize
 }
 
 #[derive(Clone, Debug, Copy)]

@@ -82,7 +82,7 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
                Fs::FAT32 => {
                         fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
                         fs_root = fs.root().expect("Root Error");
-                        File { file: fs_root.open_file("kernel.dat").expect("Kernel not found").expect("Unwrap Error") } },
+                        File { file: fs_root.open_file("kernel.dat").expect("Kernel not found").expect("Unwrap Error"), offset: 0 } },
                Fs::Other => panic!("Unsupported boot partition")
         };
 
