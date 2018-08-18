@@ -76,13 +76,32 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
         println!("{:?}", part_table);
         
         let boot_partition = part_table.get_bootable().unwrap();
-        let mut fs;
-        let mut fs_root;
-        let kernel_file = match boot_partition.fs {
+//        let mut fs;
+//        let mut fs_root;
+        match boot_partition.fs {
                Fs::FAT32 => {
-                        fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
-                        fs_root = fs.root().expect("Root Error");
-                        File { file: fs_root.open_file("kernel.dat").expect("Kernel not found").expect("Unwrap Error"), offset: 0 } },
+                        let mut fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
+                        let mut fs_root = fs.root().expect("Root Error");
+                        let kernel_file = File { file: fs_root.open_file("kernel.dat").expect("Kernel not found").expect("Unwrap Error"), args: vec![] };
+                        let mut env = format!("");
+                        loader::load_kernel(&mut active_table, kernel_file, env);
+               },
+               Fs::RedoxFS => { 
+                        let mut f = fs::redoxfs::FileSystem::open(boot_partition).expect("RedoxFS open error");
+                        let root = f.header.1.root;
+                        let node = f.find_node("kernel", root).expect("Kernel Node Error");
+                        let mut env = format!("REDOXFS_UUID=");
+                        for i in 0..f.header.1.uuid.len() {
+                            if i == 4 || i == 6 || i == 8 || i == 10 {
+                                env.push('-');
+                            }
+                            env.push_str(&format!("{:>02x}", f.header.1.uuid[i]));
+                        }
+                        env.push('\0');
+                        let kernel_file = File { file: fs::redoxfs::FileSystem::open(boot_partition).expect("RedoxFS open error"), args: vec![0, node.0 as usize] };
+                        loader::load_kernel(&mut active_table, kernel_file, env);
+                                
+               }, 
                Fs::Other => panic!("Unsupported boot partition")
         };
 
@@ -91,7 +110,6 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
         println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
         println!("Loader Stub Initialized");
         println!("Loading Kernel..");
-        loader::load_kernel(&mut active_table, kernel_file);
         println!("Kernel Loaded :)");
         loop { }
 }

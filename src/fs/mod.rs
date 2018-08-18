@@ -9,8 +9,8 @@ use self::mbr::Mbr;
 use paging::PAGE_SIZE;
 pub mod mbr;
 pub mod disk;
-mod fat32;
-mod redoxfs;
+pub mod fat32;
+pub mod redoxfs;
 
 pub const SECTOR_SIZE: usize = 512;
 const BOOTSECTOR_ADDR: usize = 0x7c00;
@@ -45,7 +45,7 @@ pub unsafe fn init_real_mode(active_table: &mut ActivePageTable)
         let result = active_table.map_to(page, frame, EntryFlags::PRESENT | EntryFlags::WRITABLE);
         result.flush(active_table);
     }
-        
+     
 }
 
 #[inline(never)]
@@ -87,12 +87,14 @@ pub fn read(id: u8, buf: &mut [u8], offset: usize)
                     { NUM_STORAGE_SECTORS as u16 } else { num_sectors as u16 };
         unsafe {
             scratch_push!();
+            preserved_push!();
             fs_push!();
 
             // Invokes the code in bootsector/x86_64/real.asm
             (read_func)(start_sector as u32 + (i as u32 * NUM_STORAGE_SECTORS as u32), num_copy_sectors, id);
 
             fs_pop!();
+            preserved_pop!();
             scratch_pop!();
         }
         let sector_offset = if i == 0 { offset % SECTOR_SIZE } else { 0 }; 

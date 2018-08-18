@@ -53,7 +53,16 @@ impl FileOps for File<FileSystem<Partition>> {
 
     fn read(&mut self, buf: &mut [u8]) -> core::result::Result<usize, FsError> 
     {
-        unimplemented!()
+        let offset = self.args[0] as u64;
+        let node = self.args[1] as u64;
+        match self.file.read_node(node, offset, buf) {
+            Ok(count) => {
+                self.args[0] += count;
+                Ok(count)
+            },
+            Err(err) => Err(FsError::ReadError)
+        }
+    
     }
    
     fn write(&mut self, buf: &mut [u8]) -> core::result::Result<usize, FsError>
@@ -66,7 +75,7 @@ impl FileOps for File<FileSystem<Partition>> {
         Ok(0)
     }
 
-    fn size(&self) -> usize {
-        unimplemented!()
+    fn size(&mut self) -> usize {
+        self.file.node_len(self.args[1] as u64).expect("SizeError") as usize
     }
 }

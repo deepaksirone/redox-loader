@@ -1,4 +1,5 @@
-use fs::mbr::Mbr; 
+use fs::mbr::Mbr;
+use alloc::Vec;
 //use core_io;
 
 pub struct Disk {
@@ -10,6 +11,7 @@ pub struct Disk {
 #[derive(Copy, Clone, Debug)]
 pub enum Fs {
     FAT32,
+    RedoxFS,
     Other
 }
 
@@ -22,7 +24,7 @@ pub struct SystemId(u8);
 
 pub struct File<T> {
     pub file: T,
-    pub offset: usize
+    pub args: Vec<usize>
 }
 
 #[derive(Clone, Debug, Copy)]
@@ -36,7 +38,7 @@ pub trait FileOps {
     fn read(&mut self, buf: &mut [u8]) -> Result<usize, FsError>;
     fn write(&mut self, buf: &mut [u8]) -> Result<usize, FsError>;
     fn seek(&mut self, pos: SeekFrom) -> Result<u64, FsError>;
-    fn size(&self) -> usize; 
+    fn size(&mut self) -> usize; 
 }
 
 pub enum SeekFrom {
@@ -51,6 +53,7 @@ impl SystemId {
     fn get_fs(&self) -> Fs {
         match self.0 {
             0x0c => Fs::FAT32,
+            0x7f => Fs::RedoxFS,
             _ => { println!("Unsupported partition"); Fs::Other }
         }
     }

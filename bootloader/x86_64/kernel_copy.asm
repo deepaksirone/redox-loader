@@ -9,15 +9,6 @@ SECTION .bios
 
 USE64
 %define retfq o64 retf
-args:
-     .kernel_base dq 0x100000
-     .kernel_size dq 0
-     .stack_base dq 0
-     .stack_size dq 0
-     .env_base dq 0
-     .env_size dq 0
-     .disk dq 0
-
 _start:
 	cli
 	push rbp
@@ -308,6 +299,15 @@ iend
 
 .end equ $ - gdt
 		
+args:
+     .kernel_base dq 0x100000
+     .kernel_size dq 0
+     .stack_base dq 0
+     .stack_size dq 0
+     .env_base dq 0
+     .env_size dq 0
+     .disk dq 0
+
 
 ;	;mov eax, [_start.start_lba]
 ;	;mov bx, 0xc000

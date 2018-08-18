@@ -58,7 +58,7 @@ impl<'a> FileOps for File<fat::File<'a, Partition>> {
         Ok(0)
     }
 
-    fn size(&self) -> usize {
+    fn size(&mut self) -> usize {
         self.file.size() as usize
     }
 }
