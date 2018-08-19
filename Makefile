@@ -1,6 +1,6 @@
 REDOX_ROOT=.
 SHELL=/bin/bash
-
+REDOXFS=sample_images/fs_redoxfs.bin
 default: run
 
 .PHONY: clean
@@ -54,8 +54,8 @@ build/real.bin:
 build/init.bin:
 	nasm -f bin -o build/init.bin -ibuild/ -ibootloader/x86_64/ bootloader/x86_64/kernel_copy.asm
 
-build/harddrive.bin: build/kernel.bin build/real.bin build/fat32.img build/init.bin
-	nasm -f bin -o $@ -D ARCH_x86_64 -D KERNEL=build/kernel.bin -D REALSTUB=build/real.bin -D INITSTUB=build/init.bin -D REDOXFS=filesystem1.bin -D FAT32=build/fat32.img -ibuild/ -ibootloader/x86_64/  bootloader/x86_64/disk.asm
+build/harddrive.bin: build/kernel.bin build/real.bin build/fat32.img build/init.bin 
+	nasm -f bin -o $@ -D ARCH_x86_64 -D KERNEL=build/kernel.bin -D REALSTUB=build/real.bin -D INITSTUB=build/init.bin -D REDOXFS=$(REDOXFS) -D FAT32=build/fat32.img -ibuild/ -ibootloader/x86_64/  bootloader/x86_64/disk.asm
 	dd if=/dev/zero bs=512 count=18126 >> $@ 
 
 cargo:
