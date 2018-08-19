@@ -16,3 +16,5 @@ Untar `sample_images/fs_redoxfs.tar.gz` and then run `make run_kvm`. A custom Re
 ## Tweaks
 * `redox-loader` currently boots from the first bootable partition it sees. Modify `bootloader/x86_64/bootsector.asm` to set the bootable partition.
 
+## License
+See [LICENSE](https://github.com/deepaksirone/redox-loader/blob/master/LICENSE)
