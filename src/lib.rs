@@ -76,8 +76,8 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
         println!("{:?}", part_table);
         
         let boot_partition = part_table.get_bootable().unwrap();
-//        let mut fs;
-//        let mut fs_root;
+        println!("Booting Kernel from {:?}", boot_partition);
+
         match boot_partition.fs {
                Fs::FAT32 => {
                         let mut fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
@@ -104,13 +104,7 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
                }, 
                Fs::Other => panic!("Unsupported boot partition")
         };
-
             
-
-        println!("Kernel Offset: {:x}", consts::KERNEL_OFFSET);
-        println!("Loader Stub Initialized");
-        println!("Loading Kernel..");
-        println!("Kernel Loaded :)");
         loop { }
 }
 /*
