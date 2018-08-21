@@ -21,7 +21,7 @@ static STACK_PHYSICAL: usize = 0x80000;
 static STACK_VIRTUAL: usize = 0xFFFFFF0000080000;
 static STACK_SIZE: usize = 0x1F000;
 
-static mut ENV_SIZE: usize = 0x0;
+static mut ENV_SIZE: usize = 0;
 
 #[repr(packed)]
 struct EntryArgs {
@@ -34,7 +34,6 @@ struct EntryArgs {
 }
 
 #[inline(never)]
-#[no_mangle]
 unsafe fn enter() -> ! {
     let entry_fn: extern "C" fn(copy_start_address: u32, kernel_size: u32, env_size: u32) -> ! = mem::transmute(COPY_KERNEL_ADDR);
     entry_fn(KERNEL_LOAD_ADDRESS as u32, KERNEL_SIZE as u32, ENV_SIZE as u32);
