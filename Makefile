@@ -56,5 +56,5 @@ build/harddrive.bin: build/kernel.bin build/real.bin build/fat32.img build/init.
 cargo:
 	mkdir -p build
 	cargo update -p linked_list_allocator --precise 0.6.2
-	TARGET=. RUST_TARGET_PATH=$(shell pwd) xargo build --release --target x86_64-redox_loader
-	cp target/x86_64-redox_loader/release/libredox_loader.a build/libredox_loader.a
+	TARGET=. RUST_TARGET_PATH=$(shell pwd) xargo build --release --target x86_64-unknown-none
+	cp target/x86_64-unknown-none/release/libredox_loader.a build/libredox_loader.a
