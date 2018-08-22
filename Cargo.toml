@@ -31,5 +31,4 @@ features = ["elf32", "elf64"]
 
 [features]
 default = []
-graphical_debug = []
 slab = ["slab_allocator"]

@@ -50,9 +50,6 @@ pub mod loader;
 pub mod consts;
 pub mod panic;
 
-#[cfg(feature = "graphical_debug")]
-pub mod graphical_debug;
-
 pub mod devices;
 
 pub use consts::*;
