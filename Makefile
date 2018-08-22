@@ -40,11 +40,6 @@ build/fat32.img: build/ice.txt
 	mcopy -i build/fat32.img build/ice.txt ::.
 	mcopy -i build/fat32.img kernel.dat ::.
 	mcopy -i build/fat32.img build/kernel.bin ::.
-build/os.iso: build/kernel.bin kernel/grub.cfg
-	mkdir -p build/isofiles/boot/grub
-	cp kernel/grub.cfg build/isofiles/boot/grub
-	cp build/kernel.bin build/isofiles/boot/
-	grub2-mkrescue -o build/os.iso build/isofiles/
 
 build/kernel.bin: kernel/linker.ld cargo
 	ld --gc-sections -z max-page-size=0x1000 -o $@ -T kernel/linker.ld build/libredox_loader.a
