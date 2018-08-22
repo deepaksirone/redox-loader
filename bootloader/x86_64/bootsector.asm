@@ -188,7 +188,7 @@ DAPACK:
 .seg:   dw 0 ; in memory page zero
 .addr:  dq 0 ; put the lba to read in this spot
 
-%ifdef FAT32 
+%ifdef REDOXFS 
 times 446-($-$$) db 0
 partition_table:
 	; FAT32

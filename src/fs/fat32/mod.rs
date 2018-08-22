@@ -5,16 +5,19 @@ use fat::{FatResult, DeviceStatus, StorageDevice, SectorOffset, FatError};
 use fat::DeviceStatus::Normal;
 use fs::SECTOR_SIZE; 
 use fs::disk::{FileOps, File, FsError, SeekFrom};
-
+use ::DISK;
 
 impl StorageDevice for Partition {
 
     // Here id is the partition number
-    fn initialize(id: u8, partition_id: u8) -> FatResult<Partition> {
-        let idx = partition_id as usize;
-        let mbr = read_bootsector();
+    fn initialize(id: u8) -> FatResult<Partition> {
+        //let idx = partition_id as usize;
+       // unsafe {
+       //     let disk = *(DISK.get_mut());
+       // }
+        let mbr = unsafe { read_bootsector(*(DISK.get_mut())) };
         let part_table = PartitionTable::new(&mbr);
-        Ok(part_table.partitions[idx].clone())
+        Ok(part_table.get_bootable().unwrap())
     }
 
     fn status(&self, id: u8) -> FatResult<DeviceStatus> {

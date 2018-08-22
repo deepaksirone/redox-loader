@@ -70,17 +70,21 @@ pub unsafe extern fn rust_main(args_ptr: *const arch::x86_64::start::KernelArgs)
         DISK.store((*args_ptr).disk, Ordering::SeqCst);
         let mut active_table  = arch::x86_64::start::kstart(args_ptr);
         fs::init_real_mode(&mut active_table);
-        let mut mbr = fs::read_bootsector();
+        let mut mbr = fs::read_bootsector(*(DISK.get_mut()));
         let part_table = fs::disk::PartitionTable::new(&mbr);
 
         println!("{:?}", part_table);
         
-        let boot_partition = part_table.get_bootable().unwrap();
+        let boot_partition = match part_table.get_bootable() {
+            Some(boot) => boot,
+            None => panic!("No bootable partition found!")
+        };
+        
         println!("Booting Kernel from {:?}", boot_partition);
 
         match boot_partition.fs {
                Fs::FAT32 => {
-                        let mut fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut()), 0).expect("FS error");
+                        let mut fs = fat::FatFileSystem::<fs::disk::Partition>::mount(*(DISK.get_mut())).expect("FS error");
                         let mut fs_root = fs.root().expect("Root Error");
                         let kernel_file = File { file: fs_root.open_file("kernel.dat").expect("Kernel not found").expect("Unwrap Error"), args: vec![] };
                         let mut env = format!("");

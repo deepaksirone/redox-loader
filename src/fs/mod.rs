@@ -4,6 +4,7 @@ use paging::entry::EntryFlags;
 use paging::mapper::MapperFlushAll;
 use core::{mem, slice};
 use paging;
+use core::intrinsics::transmute;
 
 use self::mbr::Mbr;
 use paging::PAGE_SIZE;
@@ -20,13 +21,14 @@ const DISK_READ_PAGE_END: usize = 0x70000 - 1;
 const READ_FUNC_ADDR: usize = 0xb000;
 const NUM_STORAGE_SECTORS: usize = (DISK_READ_PAGE_END - DISK_READ_STORAGE_START + 1) / SECTOR_SIZE;
 
-pub fn read_bootsector() -> Mbr {
+pub fn read_bootsector(disk_id: u8) -> Mbr {
 
-    let bootsector = unsafe { &mut *(BOOTSECTOR_ADDR as *mut Mbr) };
-    let ret = bootsector.clone();
-    println!("Checking if Bootsector is valid: {}", bootsector.is_valid());
-    
-    ret 
+    //let bootsector = unsafe { &mut *(BOOTSECTOR_ADDR as *mut Mbr) };
+    let mut bootsector: [u8; 512] = unsafe { mem::uninitialized() };
+    read(disk_id, &mut bootsector, 0);
+    let mbr = unsafe { transmute::<&[u8; 512], &Mbr>(&bootsector) };
+    println!("Checking if Bootsector is valid: {}", mbr.is_valid());
+    mbr.clone()    
 }
 
 // Set the page table mappings for disk reads

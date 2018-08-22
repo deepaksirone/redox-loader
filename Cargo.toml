@@ -15,7 +15,7 @@ slab_allocator = { path = "slab_allocator" , optional = true}
 raw-cpuid = "3.0"
 redox_syscall = { path = "syscall"}
 byteorder = { version = "1", default-features = false }
-fat = { git = "https://gitlab.com/deepaksirone/fat-rs" }
+fat = { git = "https://gitlab.com/susurrus/fat-rs", rev = "fb831ff819580cacef495ad8397717f0d9dc5ab8" }
 
 [profile.dev]
 panic = "abort"
