@@ -107,10 +107,10 @@ impl PartitionTable {
         table
     }
     
-    pub fn get_bootable(&self) -> Option<Partition> {
-        for partition in self.partitions.iter() {
+    pub fn get_bootable(&self) -> Option<(Partition, usize)> {
+        for (idx, partition) in self.partitions.iter().enumerate() {
             if partition.is_boot {
-                return Some(partition.clone())
+                return Some((*partition, idx))
             }
         }
         None

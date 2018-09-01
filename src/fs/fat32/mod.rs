@@ -17,7 +17,7 @@ impl StorageDevice for Partition {
        // }
         let mbr = unsafe { read_bootsector(*(DISK.get_mut())) };
         let part_table = PartitionTable::new(&mbr);
-        Ok(part_table.get_bootable().unwrap())
+        Ok(part_table.get_bootable().unwrap().0)
     }
 
     fn status(&self, id: u8) -> FatResult<DeviceStatus> {
