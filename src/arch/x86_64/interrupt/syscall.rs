@@ -1,4 +1,4 @@
-use arch::x86_64::pti;
+//use arch::x86_64::pti;
 //use syscall;
 
 #[naked]

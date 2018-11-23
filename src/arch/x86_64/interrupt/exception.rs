@@ -1,5 +1,4 @@
 use interrupt::stack_trace;
-use syscall::flag::*;
 
 /*extern {
     fn ksignal(signal: usize);

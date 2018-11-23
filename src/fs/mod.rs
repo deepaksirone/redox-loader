@@ -1,7 +1,7 @@
 use memory::Frame;
 use paging::{ActivePageTable, Page, PhysicalAddress, VirtualAddress};
 use paging::entry::EntryFlags;
-use paging::mapper::MapperFlushAll;
+//use paging::mapper::MapperFlushAll;
 use core::{mem, slice};
 use paging;
 use core::intrinsics::transmute;
